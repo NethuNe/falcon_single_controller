@@ -15,9 +15,11 @@ class Library(object):
             'images': []
         }
         # to initialize contents on start-up
-        self.path = "'falcon_single_controller/savedImages'"
-        for image in os.walk(self.path):
-            self.image_document['images'].append("'href': " + image)
+        # takes parent of this path, appends path from parent to saving folder
+        self.path = os.path.join(os.path.realpath('..'), 'falcon_single_controller/savedImages')
+        for root, directory, file in os.walk(self.path):
+            if len(file) is not 0:
+               self.image_document['images'].append('href: ' + file[0])
     
     def on_get(self, req, resp):
         #currently returns entirety of image document
@@ -26,6 +28,7 @@ class Library(object):
 
     def on_post(self, req, resp):
         #sanitize input for only image file types? currently doesn't
+        #currently requires content type is specified as image png, otherwise assumes JSON?
         extension = mimetypes.guess_extension(req.content_type)
         image_name = '{uuid}{ext}'.format(uuid=uuid.uuid4(), ext=extension)
         image_path = os.path.join(self.save_path, image_name)
@@ -36,7 +39,7 @@ class Library(object):
                 if not chunk:
                     break
                 image_file.write(chunk)
-            self.image_document['images'].append("'href': " + image_name)
+            self.image_document['images'].append('href: ' + image_name)
             resp.status = falcon.HTTP_200
             resp.location = '/images/' + image_name
 
