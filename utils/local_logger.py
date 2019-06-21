@@ -6,12 +6,6 @@ import logging as local_logging
 
 logger = local_logging.getLogger(__name__)
 logger.setLevel(10)
-# console_handler = logger.
-# console_handler.setLevel(10)
-# logging_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-# formatter = logger.Formatter(logging_format)
-# console_handler.setFormatter(formatter)
-# logger.addHandler(console_handler)
 
 
 #Payload Struct {

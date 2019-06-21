@@ -2,8 +2,6 @@ import falcon
 from controller.photo_library import Image, Library
 import utils.local_logger
 
-#set-up logging
-
 _SAVE_PATH = './savedImages'
 #app routes for photo_library
 api = application = falcon.API()
