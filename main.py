@@ -1,5 +1,6 @@
 import falcon
 from controller.photo_library import Image, Library
+import utils.local_logger
 
 #set-up logging
 
