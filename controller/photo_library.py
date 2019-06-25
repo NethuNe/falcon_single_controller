@@ -1,20 +1,20 @@
-import falcon
 import json
 import mimetypes
 import uuid
 import os
 import io
+import falcon
 import utils.local_logger as log
 
 _CHUNK_SIZE_IN_BYTES = 4096  # maximum chunk size of an inputted image
 
 
-class Library(object):
+class Library():
     def __init__(self, save_path):
         self.save_path = save_path
         self.image_document = []
         # to initialize contents on start-up
-        for root, directory, files in os.walk(self.save_path):
+        for _, _, files in os.walk(self.save_path):
             if len(files) is not 0:
                 for f in files:
                     self.image_document.append('href: {}'.format(f))
@@ -31,21 +31,20 @@ class Library(object):
                     '400 Bad Request',
                     'Content-Type is not specified as proper image type of .png, instead of type {}'
                     .format(extension))
-            else:
-                image_name = '{uuid}{ext}'.format(uuid=uuid.uuid4(),
-                                                  ext=extension)
-                image_path = os.path.join(self.save_path, image_name)
 
-                with io.open(image_path, 'wb') as image_file:
-                    while True:
-                        chunk = req.bounded_stream.read(_CHUNK_SIZE_IN_BYTES)
-                        if not chunk:
-                            break
-                        image_file.write(chunk)
+            image_name = '{uuid}{ext}'.format(uuid=uuid.uuid4(), ext=extension)
+            image_path = os.path.join(self.save_path, image_name)
 
-                    self.image_document.append('href: {}'.format(image_name))
-                    resp.location = '/images/{}'.format(image_name)
-                    resp.status = falcon.HTTP_200
+            with io.open(image_path, 'wb') as image_file:
+                while True:
+                    chunk = req.bounded_stream.read(_CHUNK_SIZE_IN_BYTES)
+                    if not chunk:
+                        break
+                    image_file.write(chunk)
+
+                self.image_document.append('href: {}'.format(image_name))
+                resp.location = '/images/{}'.format(image_name)
+                resp.status = falcon.HTTP_200
         except falcon.HTTPInternalServerError as e:
             log.log(
                 __name__, {
@@ -55,7 +54,7 @@ class Library(object):
                 }, 40)
 
 
-class Image(object):
+class Image():
     def __init__(self, save_path):
         self.save_path = save_path
 
